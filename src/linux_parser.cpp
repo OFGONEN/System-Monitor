@@ -69,7 +69,7 @@ vector<int> LinuxParser::Pids() {
   return pids;
 }
 
-// TODO: Read and return the system memory utilization
+// DONE: Read and return the system memory utilization
 float LinuxParser::MemoryUtilization() {
   // MemTotal:       131919132 kB
   // MemFree:        19930064 kB
@@ -103,7 +103,7 @@ float LinuxParser::MemoryUtilization() {
   return (total - free) / total;
 }
 
-// TODO: Read and return the system uptime
+// DONE: Read and return the system uptime
 long LinuxParser::UpTime() {
   // 31620.67 757943.01
   // This file contains two numbers (values in seconds): the uptime of the
@@ -136,7 +136,36 @@ long LinuxParser::ActiveJiffies() { return 0; }
 long LinuxParser::IdleJiffies() { return 0; }
 
 // TODO: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() { return {}; }
+vector<string> LinuxParser::CpuUtilization() {
+  // /proc/stat
+  // cpu  58108 220 48109 88871914 4450 0 3463 0 0 0
+  // The First Line of the File is the Line we need
+  vector<std::string> cpuUtilValues;
+  string line;
+  string key;
+  string kUser, kNice, kSystem, kIdle, kIOwait, kIRQ, kSoftIRQ, kSteal, kGuest,
+      kGuestNice;
+
+  std::ifstream fileStream(kProcDirectory + kStatFilename);
+  std::getline(fileStream, line);
+  std::istringstream lineStream(line);
+
+  lineStream >> key >> kUser >> kNice >> kSystem >> kIdle >> kIOwait >> kIRQ >>
+      kSoftIRQ >> kSteal >> kGuest >> kGuestNice;
+
+  cpuUtilValues.push_back(kUser);
+  cpuUtilValues.push_back(kNice);
+  cpuUtilValues.push_back(kSystem);
+  cpuUtilValues.push_back(kIdle);
+  cpuUtilValues.push_back(kIOwait);
+  cpuUtilValues.push_back(kIRQ);
+  cpuUtilValues.push_back(kSoftIRQ);
+  cpuUtilValues.push_back(kSteal);
+  cpuUtilValues.push_back(kGuest);
+  cpuUtilValues.push_back(kGuestNice);
+
+  return cpuUtilValues;
+}
 
 // DONE: Read and return the total number of processes
 int LinuxParser::TotalProcesses() {
