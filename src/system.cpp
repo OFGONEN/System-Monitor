@@ -23,24 +23,16 @@ system."
 You need to properly format the uptime. Refer to the comments mentioned in
 format. cpp for formatting the uptime.*/
 
-System::System() {
-  // convert pids into Proceesses
-  vector<int> pids = LinuxParser::Pids();
-  for (const int& i : pids) {
-    Process process =
-        Process(i, std::stoi(LinuxParser::Uid(i)), LinuxParser::User(i),
-                LinuxParser::Command(i), LinuxParser::CpuUtilization(i),
-                LinuxParser::Ram(i), LinuxParser::UpTime(i));
-
-    processes_.push_back(process);
-  }
-}
+System::System() { UpdateProcesses(); }
 
 // DONE: Return the system's CPU
 Processor& System::Cpu() { return cpu_; }
 
 // DONE: Return a container composed of the system's processes
-vector<Process>& System::Processes() { return processes_; }
+vector<Process>& System::Processes() {
+  // UpdateProcesses();
+  return processes_;
+}
 
 // DONE: Return the system's kernel identifier (string)
 std::string System::Kernel() { return LinuxParser::Kernel(); }
@@ -59,3 +51,18 @@ int System::TotalProcesses() { return LinuxParser::TotalProcesses(); }
 
 // DONE: Return the number of seconds since the system started running
 long int System::UpTime() { return LinuxParser::UpTime(); }
+
+void System::UpdateProcesses() {
+  // convert pids into Proceesses
+  processes_.clear();
+
+  vector<int> pids = LinuxParser::Pids();
+  for (const int& i : pids) {
+    Process process =
+        Process(i, std::stoi(LinuxParser::Uid(i)), LinuxParser::User(i),
+                LinuxParser::Command(i), LinuxParser::CpuUtilization(i),
+                LinuxParser::Ram(i), LinuxParser::UpTime(i));
+
+    processes_.push_back(process);
+  }
+}
