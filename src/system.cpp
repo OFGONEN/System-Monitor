@@ -23,10 +23,23 @@ system."
 You need to properly format the uptime. Refer to the comments mentioned in
 format. cpp for formatting the uptime.*/
 
+System::System() {
+  // convert pids into Proceesses
+  vector<int> pids = LinuxParser::Pids();
+  for (const int& i : pids) {
+    Process process =
+        Process(i, std::stoi(LinuxParser::Uid(i)), LinuxParser::User(i),
+                LinuxParser::Command(i), LinuxParser::CpuUtilization(i),
+                LinuxParser::Ram(i), LinuxParser::UpTime(i));
+
+    processes_.push_back(process);
+  }
+}
+
 // DONE: Return the system's CPU
 Processor& System::Cpu() { return cpu_; }
 
-// TODO: Return a container composed of the system's processes
+// DONE: Return a container composed of the system's processes
 vector<Process>& System::Processes() { return processes_; }
 
 // DONE: Return the system's kernel identifier (string)

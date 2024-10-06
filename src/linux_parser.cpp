@@ -135,7 +135,7 @@ long LinuxParser::ActiveJiffies() { return 0; }
 // TODO: Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() { return 0; }
 
-// TODO: Read and return CPU utilization
+// DONE: Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() {
   // /proc/stat
   // cpu  58108 220 48109 88871914 4450 0 3463 0 0 0
@@ -211,22 +211,63 @@ int LinuxParser::RunningProcesses() {
   return -1;
 }
 
-// TODO: Read and return the command associated with a process
+// DONE: Read and return the command associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Command(int pid [[maybe_unused]]) { return string(); }
+string LinuxParser::Command(int pid) {
+  // proc/[pid]/cmdline
+  string command = string();
+  std::ifstream fileStream(kProcDirectory + "/" + std::to_string(pid) +
+                           kCmdlineFilename);
+
+  if (fileStream.is_open()) {
+    std::getline(fileStream, command);
+  }
+
+  return command;
+}
 
 // TODO: Read and return the memory used by a process
 // REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Ram(int pid [[maybe_unused]]) { return string(); }
 
-// TODO: Read and return the user ID associated with a process
+// DONE: Read and return the user ID associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Uid(int pid [[maybe_unused]]) { return string(); }
+string LinuxParser::Uid(int pid) {
+  // /proc/[PID]/status
+  // Uid:    0       0       0       0
+  string line;
+  string key;
+  string value = "-1";
 
-// TODO: Read and return the user associated with a process
+  std::ifstream fileStream(kProcDirectory + "/" + std::to_string(pid) +
+                           kStatusFilename);
+
+  if (fileStream.is_open()) {
+    while (std::getline(fileStream, line)) {
+      std::istringstream lineStream(line);
+      if (lineStream >> key && key == "Uid:") {
+        lineStream >> value;
+        return value;
+      }
+    }
+  }
+
+  return string();
+}
+
+// DONE: Read and return the user associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::User(int pid [[maybe_unused]]) { return string(); }
+string LinuxParser::User(int pid) {
+  // etc/passwd
+  //tcpdump:x:107:113::/nonexistent:/usr/sbin/nologin
+  //107 is the uID that we need to match
+  string userName = string();
+
+  return userName;
+}
 
 // TODO: Read and return the uptime of a process
 // REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::UpTime(int pid [[maybe_unused]]) { return 0; }
+
+float LinuxParser::CpuUtilization(int pid) { return 0; }
