@@ -30,7 +30,7 @@ Processor& System::Cpu() { return cpu_; }
 
 // DONE: Return a container composed of the system's processes
 vector<Process>& System::Processes() {
-  // UpdateProcesses();
+  UpdateProcesses();
   return processes_;
 }
 
@@ -54,7 +54,8 @@ long int System::UpTime() { return LinuxParser::UpTime(); }
 
 void System::UpdateProcesses() {
   // convert pids into Proceesses
-  processes_.clear();
+  // processes_.clear();
+  processes_ = {};
 
   vector<int> pids = LinuxParser::Pids();
   for (const int& i : pids) {
