@@ -259,9 +259,26 @@ string LinuxParser::Uid(int pid) {
 // REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::User(int pid) {
   // etc/passwd
-  //tcpdump:x:107:113::/nonexistent:/usr/sbin/nologin
-  //107 is the uID that we need to match
+  // tcpdump:x:107:113::/nonexistent:/usr/sbin/nologin
+  // 107 is the uID that we need to match
   string userName = string();
+  string uId = Uid(pid);
+
+  string line;
+  string other;
+  string key;
+
+  std::ifstream fileStream(kPasswordPath);
+  if (fileStream.is_open()) {
+    while (std::getline(fileStream, line)) {
+      std::replace(line.begin(), line.end(), ':', ' ');
+      std::istringstream lineStream(line);
+      lineStream >> userName;
+      lineStream >> other >> key;
+
+      if (key == uId) return userName;
+    }
+  }
 
   return userName;
 }
